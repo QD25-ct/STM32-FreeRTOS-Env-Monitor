@@ -1,0 +1,14 @@
+# Keil MDK 临时文件
+*.uvguix.*
+*.scvd
+DebugConfig/
+Debug/
+Obj/
+Listings/
+Objects/
+*.bak
+*.dep
+*.lst
+*.map
+*.o
+*.axf

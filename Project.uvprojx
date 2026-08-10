@@ -661,11 +661,6 @@
               <FilePath>.\system\Delay.c</FilePath>
             </File>
             <File>
-              <FileName>timer.c</FileName>
-              <FileType>1</FileType>
-              <FilePath>.\timer.c</FilePath>
-            </File>
-            <File>
               <FileName>Delay.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\system\Delay.h</FilePath>
@@ -674,6 +669,16 @@
               <FileName>sys.h</FileName>
               <FileType>5</FileType>
               <FilePath>.\system\sys.h</FilePath>
+            </File>
+            <File>
+              <FileName>timer.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\system\timer.c</FilePath>
+            </File>
+            <File>
+              <FileName>timer.h</FileName>
+              <FileType>5</FileType>
+              <FilePath>.\system\timer.h</FilePath>
             </File>
           </Files>
         </Group>
