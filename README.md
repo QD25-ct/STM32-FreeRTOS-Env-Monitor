@@ -1,57 +1,83 @@
-# STM32‑FreeRTOS‑Env‑Monitor
-基于STM32F103C8T6 + FreeRTOS 的嵌入式环境监控终端。
+# 基于 FreeRTOS 的微型环境监控终端
+
+[![License](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
+[![Platform](https://img.shields.io/badge/Platform-STM32F103C8T6-brightgreen)](https://www.st.com/)
+[![RTOS](https://img.shields.io/badge/RTOS-FreeRTOS-orange)](https://www.freertos.org/)
 
 ## 项目简介
-本项目实现DHT11温湿度采集、OLED屏幕多页面轮转显示、阈值报警、参数掉电保存功能。采用FreeRTOS多任务架构，任务之间通过消息队列传递数据，开启栈溢出检测，完成BSP驱动分层，工程目录规范化，使用Git做版本管理。
 
-## 硬件平台
-- MCU：STM32F103C8T6
-- 传感器：DHT11温湿度模块
-- 显示：0.96寸 I2C OLED（SSD1306）
-- 外设：LED报警指示灯
+本项目基于 **STM32F103C8T6** 和 **FreeRTOS**，搭建了 BSP 驱动层、RTOS 内核层和应用逻辑层的三层软件架构。实现了 DHT11 温湿度采集、OLED 三页面自动轮播 UI，并通过 **内部 Flash 模拟 EEPROM** 实现了启动计数和报警阈值的掉电非易失存储。
 
-## 运行效果
-| 历史极值页面 | 当前温湿度页面 | 系统信息页面 |
+##  硬件平台
+
+| 组件 | 型号/规格 |
+| :--- | :--- |
+| MCU | STM32F103C8T6 (Cortex-M3, 72MHz) |
+| 传感器 | DHT11 (单总线协议) |
+| 显示 | 0.96寸 OLED (I2C接口, SSD1306) |
+| 板载 LED | PC13 (低电平点亮) |
+| 调试接口 | SWD (ST-Link) |
+
+## 功能特性
+
+-  **FreeRTOS 多任务调度**：3 个独立任务（传感器采集 / OLED显示 / LED心跳），优先级分级管理
+-  **消息队列 (Queue)**：实现任务间异步数据传递，解耦生产者和消费者
+-  **内部 Flash 模拟 EEPROM**：
+  - 启动计数器（每次上电/复位自动 +1）
+  - 报警阈值断电保存（默认 30℃，可修改）
+-  **OLED 三页面自动轮播**（每 5 秒切换）：
+  - 页面0：当前温湿度 + 报警状态
+  - 页面1：历史最高/最低温度 + Boot 计数
+  - 页面2：FreeRTOS 堆剩余大小 + 当前阈值 + 页码
+-  **超阈值 LED 快闪报警**：温度 > 阈值时 LED 从 1秒慢闪 切换为 200ms 快闪
+-  **栈溢出检测**：开启 `configCHECK_FOR_STACK_OVERFLOW 2`，异常时 LED 常亮提示
+
+## 软件架构
+```text
+STM32-FreeRTOS-Env-Monitor/
+├── BSP/               # 硬件驱动层
+│   ├── bsp_oled.c/.h
+│   ├── bsp_dht11.c/.h
+│   └── bsp_flash.c/.h
+├── User/              # 应用逻辑层
+│   ├── main.c
+│   └── stm32f10x_it.c
+├── FreeRTOS/          # RTOS 内核
+│   ├── include/
+│   ├── src/
+│   ├── port/
+│   └── mem/
+└── System/            # 系统工具层
+    ├── Delay.c/.h
+    └── timer.c/.h
+```
+
+## 运行效果（实拍图）
+| 页面0（当前值） | 页面1（历史极值） | 页面2（系统信息） |
 | :---: | :---: | :---: |
-| ![历史极值](Images/page1.png) | ![当前温湿度](Images/page2.png) | ![系统信息](Images/page3.png) |
+| ![页面0](Images/page1.png) | ![页面1](Images/page2.png) | ![页面2](Images/page3.png) |
+| 实时温度/湿度 + **Status:ALARM!**<br>（展示超阈值报警功能） | 历史最高/最低温 + Boot 计数<br>（展示 Flash 保存的历史极值和开机次数） | FreeRTOS 堆大小 + 阈值 TH + 页码 3/3<br>（展示 RTOS 系统运行参数） |
+## 接线说明
 
-> 功能说明：OLED三页自动循环切换；
-> - 历史极值页：记录最大最小温度、Flash保存的设备启动次数；
-> - 当前温湿度页：实时采集DHT11数据，温度超限显示ALARM报警状态；
-> - 系统信息页：展示FreeRTOS堆内存、报警阈值、页面编号；
-> 片内Flash模拟EEPROM保存启动计数与报警阈值，超阈值触发LED快速闪烁报警。
+| 外设 | 引脚 | 说明 |
+| :--- | :--- | :--- |
+| OLED SCL | PB8 | I2C 时钟线 |
+| OLED SDA | PB9 | I2C 数据线 |
+| DHT11 DATA | PA0 | 单总线数据线 |
+| 板载 LED | PC13 | 低电平点亮 |
+| 调试接口 | SWD (PA13, PA14) | ST-Link 烧录 |
 
-## 主要功能
-1. DHT11周期采集环境温度、湿度数据，做校验容错处理
-2. OLED多页面自动轮转：实时数值、历史最大/最小极值、系统堆栈与启动计数
-3. Flash模拟EEPROM，实现启动计数、报警阈值断电保存
-4. 超阈值触发LED闪烁报警
-5. FreeRTOS消息队列实现多任务解耦通信
-6. 开启任务栈溢出检测，提升系统稳定性
+## 开发环境
 
-## 工程目录
-├── BSP // BSP 底层硬件驱动
-├── system // 系统定时器、底层工具
-├── User // FreeRTOS 任务、业务逻辑
-├── freertos // FreeRTOS 内核源码
-├── Hardware // 外设硬件相关
-├── Library // STM32 标准库
-├── Start // 启动文件
-├── Images // 实物运行效果图
-├── Project.uvprojx // Keil 工程文件
-└── README.md // 项目文档
+| 工具 | 版本 |
+| :--- | :--- |
+| IDE | Keil MDK 5.06 |
+| 编译器 | ARMCC V5.06 update 5 (build 528) |
+| 标准库 | STM32F10x_StdPeriph_Driver V3.5.0 |
+| RTOS | FreeRTOS V9.0.0 |
 
+## 快速开始
 
-## 编译环境
-Keil MDK‑ARM5
-
-## 使用说明
-1. Keil打开`Project.uvprojx`工程
-2. 编译下载到STM32F103C8T6开发板
-3. 上电运行，OLED自动循环切换页面；温度超限LED报警。
-
-<!-- 后续录完视频，把链接替换进来
-## 演示视频
-[B站演示链接](https://xxx)
-演示：复位启动计数累加，手捏DHT11触发超温报警。
--->
+1. **克隆仓库**：
+   ```bash
+   git clone https://github.com/QD25-ct/STM32-FreeRTOS-Env-Monitor.git
