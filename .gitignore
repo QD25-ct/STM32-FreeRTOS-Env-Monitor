@@ -1,14 +1,30 @@
-# Keil MDK 临时文件
-*.uvguix.*
-*.scvd
+# Keil MDK 编译输出
+*.uvgui*
+*.uvguix*
+*.bak
+*.lnp
+*.sct
+*.dep
+*.crf
+*.o
+*.d
+*.axf
+*.elf
+*.hex
+*.bin
+*.map
+*.lst
+*.i
+*.htm
+*.srec
+
+# Debug 编译输出文件夹
 DebugConfig/
 Debug/
-Obj/
-Listings/
-Objects/
-*.bak
-*.dep
-*.lst
-*.map
-*.o
-*.axf
+Release/
+
+# 其他临时文件
+*.log
+*.tmp
+*.sw?
+.DS_Store
