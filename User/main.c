@@ -207,21 +207,19 @@ void vDisplayTask(void *pvParameters)
                     
                     // 最高温
                     OLED_ShowString(2, 1, "Max: ");
-                    if(max_t != -99) {
-                        OLED_ShowNum(2, 6, max_t, 2);
-                        OLED_ShowString(2, 8, " C");
-                    } else {
-                        OLED_ShowString(2, 6, "--");
-                    }
+					if(max_t != -99) {
+						OLED_ShowSignedNum(2, 6, max_t, 2); // 改成有符号
+						OLED_ShowString(2, 9, " C");        // 列偏移也改成 9
+					}
                     
                     // 最低温
                     OLED_ShowString(3, 1, "Min: ");
-                    if(min_t != 100) {
-                        OLED_ShowNum(3, 6, min_t, 2);
-                        OLED_ShowString(3, 8, " C");
-                    } else {
-                        OLED_ShowString(3, 6, "--");
-                    }
+					if(min_t != 100) {
+						OLED_ShowSignedNum(3, 6, min_t, 2); // 使用带符号的函数
+						OLED_ShowString(3, 9, " C");        // 注意！列偏移从 8 改为 9
+					} else {
+						OLED_ShowString(3, 6, "--");
+					}
                     
                     // 启动次数
                     OLED_ShowString(4, 1, "Boot: ");
