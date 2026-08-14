@@ -1,6 +1,7 @@
 # Keil MDK 编译输出
 *.uvgui*
 *.uvguix*
+*.uvoptx
 *.bak
 *.lnp
 *.sct
@@ -27,4 +28,4 @@ Release/
 *.log
 *.tmp
 *.sw?
-.DS_Store
+.DS_Store*.uvoptx
