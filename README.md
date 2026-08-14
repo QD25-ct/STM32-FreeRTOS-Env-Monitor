@@ -55,7 +55,7 @@ STM32-FreeRTOS-Env-Monitor/
 ## 运行效果（实拍图）
 | 页面0（当前值） | 页面1（历史极值） | 页面2（系统信息） |
 | :---: | :---: | :---: |
-| ![页面0](Images/page1.png) | ![页面1](Images/page2.png) | ![页面2](Images/page3.png) |
+| ![页面0](Images/page1.jpg) | ![页面1](Images/page2.jpg) | ![页面2](Images/page3.jpg) |
 | 实时温度/湿度 + **Status:ALARM!**<br>（展示超阈值报警功能） | 历史最高/最低温 + Boot 计数<br>（展示 Flash 保存的历史极值和开机次数） | FreeRTOS 堆大小 + 阈值 TH + 页码 3/3<br>（展示 RTOS 系统运行参数） |
 ## 接线说明
 
